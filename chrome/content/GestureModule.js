@@ -44,6 +44,8 @@ FennecGestureModule.prototype = {
 
   _gestures: {},
 
+  _latestMovement: null,
+
   _preGrabData: {
     firstClickX: 0,
     firstClickY: 0,
@@ -258,6 +260,8 @@ FennecGestureModule.prototype = {
         
     dump("\nResulting Movements:\n" + movs + "\n");
     
+    this._latestMovement = movs;
+    
     //Check which is the best match among the registered gestures
     this._bestMatch(movs);
     
@@ -290,13 +294,15 @@ FennecGestureModule.prototype = {
       document.dispatchEvent(gEvent);
     } else {
       gEvent.initEvent("Gesture_Unrecognized", true, false);
-      gEvent.data = movs;
       document.dispatchEvent(gEvent);
       dump("\nNo best match\n\n");
     }
   
   },
   
+  get latestMovement() {
+    return this._latestMovement;
+  },  
   
   _makeTrailString: function(trail) {
     
