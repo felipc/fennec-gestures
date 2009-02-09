@@ -28,6 +28,8 @@ function FennecGestureModule(owner) {
     { name: "InvertedC", action: "dcxza"},
     { name: "Wave", action: "wedcdew"},
     { name: "Star", action: "ecqdz"},
+    { name: "Star", action: "wxqadz"},
+    { name: "Eight", action: "zxcxzaqwewqa"},    
     { name: "RotateClockwise", action: "dcxzaqwe"},
     { name: "RotateClockwise", action: "aqwedcxz"},
     { name: "RotateAnticlock", action: "azxcdewq"},
@@ -45,6 +47,8 @@ FennecGestureModule.prototype = {
   _gestures: {},
 
   _latestMovement: null,
+  
+  _cv: null,
 
   _preGrabData: {
     firstClickX: 0,
@@ -108,6 +112,16 @@ FennecGestureModule.prototype = {
       this._grabbing = true;
       this._owner.grab(this);
       this._startGesture(aEvent);
+      document.getElementById("containerForCanvas").hidden = false;
+      let canvas = document.getElementById("trailCanvas");
+      if (canvas.getContext) {
+        this._cv = canvas.getContext('2d');
+        this._cv.lineJoin = 'round';
+        this._cv.beginPath();
+        this._cv.moveTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
+      } else {
+        dump("Could not get context\n");
+      }
     }
     
   },
@@ -116,14 +130,22 @@ FennecGestureModule.prototype = {
     if (this._grabbing) {
       this._grabbing = false;
       this._owner.ungrab(this);
+      this._cv.closePath();
+      this._cv.clearRect(0,0,300,300);
       this._processGesture();
       this._preGrabData.reset();
+      document.getElementById("containerForCanvas").hidden = true;
     }
   },
   
   _onMouseMove: function(aEvent) {
     if (this._grabbing) {
       this._pushMovement(aEvent);
+
+      this._cv.lineTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
+      this._cv.stroke();
+
+
     }
   },
   
