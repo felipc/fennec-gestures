@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:html="http://www.w3.org/1999/xhtml">
-	<script type="application/x-javascript" src="chrome://fennec-gesture/content/set-debug-prefs.js"></script>
-	<script type="application/x-javascript" src="chrome://fennec-gesture/content/GestureModule.js"></script>
-	<script type="application/x-javascript" src="chrome://fennec-gesture/content/ux.js"></script>
-	<script type="application/x-javascript" src="chrome://fennec-gesture/content/start.js"></script>
+	<script type="application/x-javascript" src="chrome://fennec-gestures/content/set-debug-prefs.js"></script>
+	<script type="application/x-javascript" src="chrome://fennec-gestures/content/GestureModule.js"></script>
+	<script type="application/x-javascript" src="chrome://fennec-gestures/content/ux.js"></script>
+	<script type="application/x-javascript" src="chrome://fennec-gestures/content/start.js"></script>
 	
 	<stack id="browser-container">
 		<vbox id="containerForCanvas" flex="1" style="-moz-stack-sizing: ignore; left: 0; top: 0; width: 300px; height: 300px; background-color: rgba(0,0,250,0.3);" constraint="ignore-y" hidden="true">

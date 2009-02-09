@@ -3,10 +3,10 @@ TODO: verify these instructions
 To test this extension without needing to install it from AMO:
 
 1. create a folder where the code will reside:
-  mkdir fennec-gesture
+  mkdir fennec-gestures
 
 2. clone the git project
-  git clone git://github.com/felipc/fennec-gesture.git
+  git clone git://github.com/felipc/fennec-gestures.git
 
 3. Find your Fennec profile folder and extensions folder
   Usually at ~/Library/Application Support/Fennec/Profiles/something.default/
