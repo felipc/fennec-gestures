@@ -1,0 +1,24 @@
+This project is a prototype of a Gesture Engine for Fennec. The tracking bug is
+https://bugzilla.mozilla.org/show_bug.cgi?id=476425
+
+This project will be used to track progress both in the implementation of the
+core gesture engine plus of user-experience prototypes and experiments related
+to the Gestures support and the definition of an API for these gestures.
+
+The core at chrome/content/GestureModule.js will continue to be converted as a
+patch to be posted to the bug, but the good thing about this extension is that
+it makes packaging everything (the core, the user-experience and the demonstra-
+tions) more easily. Soon this will be posted to AMO so that Fennec alpha testers
+can test and give opinions on the project.
+
+
+Instructions on how to clone this GIT to test the extension on HOW-TO-USE.txt
+
+GPLv2, MPL
+
+Author contact info:
+Felipe Gomes
+felipe.wordpress.com
+felipc {} gmail.com
+nick: felipc on irc.mozilla.org, #extdev #mobile #ubiquity
+

@@ -1,0 +1,3 @@
+window.cdump = function(a) { Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService).logStringMessage(a) };
+Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch2).setBoolPref("browser.dom.window.dump.enabled",true);
+Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch2).setBoolPref("javascript.options.showInConsole",true);

@@ -1,0 +1,4 @@
+content fennec-gesture   chrome/content/
+skin    fennec-gesture   classic         chrome/skin/
+
+overlay		chrome://browser/content/browser.xul	chrome://fennec-gesture/content/overlay.xul

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+	<Description about="urn:mozilla:install-manifest">
+		<em:id>fennec-gesture@felipc.com</em:id>
+		<em:version>0.1</em:version>
+
+		<em:name>Fennec Gestures</em:name>
+		<em:description>Prototype for gesture handling in Fennec</em:description>
+		<em:creator>Felipe Gomes</em:creator>
+		<em:iconURL>chrome://fennec-gesture/skin/icon.gif</em:iconURL>
+		<!--<em:optionsURL>chrome://fennec-gesture/content/optionsDialog.xul</em:optionsURL>-->
+
+		<!-- Fennec -->
+		<em:targetApplication>
+			<Description>
+				<em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
+				<em:minVersion>0.1</em:minVersion>
+				<em:maxVersion>1.0.*</em:maxVersion>
+			</Description>
+		</em:targetApplication>
+	</Description>
+</RDF>
