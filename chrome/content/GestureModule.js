@@ -22,6 +22,7 @@ function FennecGestureModule(owner) {
     { name: "-> <-", action: "da"},
     { name: "<- ->", action: "ad"},
     { name: "X", action: "cae"},
+    { name: "X", action: "zdq"},
     { name: "Square", action: "dxaw"},
     { name: "House", action: "wecxa"},
     { name: "U", action: "xcdew"},
@@ -36,6 +37,9 @@ function FennecGestureModule(owner) {
     { name: "Eight", action: "zxcdcxzawewa"},
     { name: "RotateClockwise", action: "dcxzaqwe"},
     { name: "RotateClockwise", action: "aqwedcxz"},
+    { name: "Infinity", action: "wecdewqazxzaq"},
+    { name: "Infinity", action: "edcdewqaza"},
+    { name: "Twirl", action: "dcxzawedcxza"},
     { name: "RotateAnticlock", action: "azxcdewq"},
     { name: "DoubleClockwise", action: "dcxzaqwedcxzaqwe"},
     { name: "ClockAnticlock", action: "dcxzaqweazxcdewq"}

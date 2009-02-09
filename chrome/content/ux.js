@@ -6,8 +6,10 @@ function setGestureListeners() {
   window.addEventListener("Gesture_RotateClockwise", function() { BrowserUI.newTab() }, false);
   window.addEventListener("Gesture_X", function() { BrowserUI.closeTab(Browser._currentTab); }, false);
   window.addEventListener("Gesture_U", function() { BrowserUI.showBookmarks(); }, false);
-  window.addEventListener("Gesture_Eight", function() { NotificationSystem.notify("Do the twist!"); }, false);
+  window.addEventListener("Gesture_Eight", function() { NotificationSystem.notify("Hello World"); }, false);
+  window.addEventListener("Gesture_Twirl", function() { NotificationSystem.notify("Do the twist!"); }, false);
   window.addEventListener("Gesture_House", function() { window.open("http://www.mozilla.com"); }, false);
+  window.addEventListener("Gesture_Infinity", function() { NotificationSystem.notify("∞"); }, false);
 }
 
 let NotificationSystem = {
