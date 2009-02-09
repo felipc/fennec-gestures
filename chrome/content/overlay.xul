@@ -11,7 +11,7 @@
 			<html:canvas id="trailCanvas" width="300px" height="300px"></html:canvas>
 		</vbox>
 		
-		<vbox id="notificationContainer" flex="1" style="-moz-stack-sizing:ignore; left: 50px; top: 35px; background-color: rgba(0,0,0,0.7); width: 600px; height: 60px;" constraint="vp-relative" hidden="true">
+		<vbox id="notificationContainer" flex="1" style="-moz-stack-sizing:ignore; left: 50px; top: 35px; background-color: rgba(0,0,0,0.7); width: 600px; height: 60px; -moz-border-radius: 4px" constraint="vp-relative" hidden="true">
 			<description id="notifyArea" style="text-align: center; font-size: 48px !important; line-height: 60px; font-weight: bold; color: white;" />
 		</vbox>
 	</stack>
