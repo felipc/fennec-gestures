@@ -299,9 +299,11 @@ FennecGestureModule.prototype = {
   
   _bestMatch: function (movs) {
     
-    let winningName = '', winningVal = 100, curValue = '';
+    let winningName = '', winningVal = 100, curValue = '', winningMov;
     
     dump("\n\nLevenshtein:\n--------------\n");
+    
+    let matchTable = [0, 0, 0, 1, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5];
     
     for (let [movements, gestureName] in Iterator(this._gestures)) {
       
@@ -312,13 +314,16 @@ FennecGestureModule.prototype = {
        if (curValue < winningVal) {
          winningVal = curValue;
          winningName = gestureName;
+         winningMov = movements;
        }
        
        dump(gestureName + ": " + curValue + "\n");
     }
 
+    let matchValue = matchTable[winningMov.length] || 5; //usually will be 2
+
     let gEvent = document.createEvent("Events");
-    if (winningVal <= 2) {
+    if (winningVal <= matchValue) {
       dump("\nBest match: " + winningName + "\n\n");
       gEvent.initEvent("Gesture_" + winningName, true, false);
       document.dispatchEvent(gEvent);
