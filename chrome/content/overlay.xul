@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-	xmlns:html="http://www.w3.org/1999/xhtml">
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:svg="http://www.w3.org/2000/svg">
 	<script type="application/x-javascript" src="chrome://fennec-gestures/content/set-debug-prefs.js"></script>
 	<script type="application/x-javascript" src="chrome://fennec-gestures/content/GestureModule.js"></script>
 	<script type="application/x-javascript" src="chrome://fennec-gestures/content/ux.js"></script>
@@ -13,6 +14,19 @@
 		
 		<vbox id="notificationContainer" flex="1" style="-moz-stack-sizing:ignore; left: 50px; top: 35px; background-color: rgba(0,0,0,0.7); width: 600px; height: 60px; -moz-border-radius: 4px" constraint="vp-relative" hidden="true">
 			<description id="notifyArea" style="text-align: center; font-size: 48px !important; line-height: 60px; font-weight: bold; color: white;" />
+		</vbox>
+		
+		<vbox id="pieMenu" flex="1" style="-moz-stack-sizing:ignore; left:0; top:0; width: 800px; height: 200px;" onclick="this.hidden=true" hidden="true">
+			<html:div style="position:relative; width: 400px; height: 300px">
+				<svg:svg width="100%" height="100%" version="1.1" style="position:absolute; left: 350px; top:100px">
+					<svg:circle cx="120" cy="120" r="90" stroke="black"
+					stroke-width="2" fill="rgba(0,0,255,0.4)"/>
+				</svg:svg>
+				<html:div id="pieBack" style="width:64px; height:66px; position: absolute; left: 390px; top: 192px; background: url(chrome://browser/skin/images/right_buttons.png) 0 -48px;"/>
+				<html:div id="pieForw" style="width:48px; height:48px; position: absolute; left: 500px; top: 200px; background: url(chrome://browser/skin/images/right_buttons.png) -48px -112px;"/>
+				<html:div id="pieBook" style="width:48px; height:48px; position: absolute; left: 450px; top: 140px; background: url(chrome://browser/skin/images/right_buttons.png) -48px 0;"/>
+				<html:div id="pieNTab" style="width:48px; height:48px; position: absolute; left: 450px; top: 260px; background: url(chrome://browser/skin/images/left_buttons.png) -48px 0;"/>
+			</html:div>
 		</vbox>
 	</stack>
 </overlay>

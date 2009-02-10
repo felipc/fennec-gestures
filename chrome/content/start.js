@@ -4,5 +4,6 @@ window.addEventListener('load', function() {
   ih._modules.push(Gestures);
   window.Gestures = Gestures;
   setGestureListeners();
+  setPieMenu();
   
 }, false);

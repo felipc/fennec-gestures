@@ -4,12 +4,20 @@ function setGestureListeners() {
   window.addEventListener("Gesture_Star", function() { BrowserUI.doCommand("cmd_star"); }, false);
   window.addEventListener("Gesture_Wave", function() { BrowserUI.doCommand("cmd_star"); NotificationSystem.notify("Bookmarked"); }, false);
   window.addEventListener("Gesture_RotateClockwise", function() { BrowserUI.newTab() }, false);
+  window.addEventListener("Gesture_RotateAnticlock", function() { document.getElementById("pieMenu").hidden=false; }, false);
   window.addEventListener("Gesture_X", function() { BrowserUI.closeTab(Browser._currentTab); }, false);
   window.addEventListener("Gesture_U", function() { BrowserUI.showBookmarks(); }, false);
   window.addEventListener("Gesture_Eight", function() { NotificationSystem.notify("Hello World"); }, false);
   window.addEventListener("Gesture_Twirl", function() { NotificationSystem.notify("Do the twist!"); }, false);
-  window.addEventListener("Gesture_House", function() { window.open("http://www.mozilla.com"); }, false);
+  window.addEventListener("Gesture_House", function() { getBrowser().loadURI("http://www.mozilla.com", null, null, false); }, false);
   window.addEventListener("Gesture_Infinity", function() { NotificationSystem.notify("∞"); }, false);
+}
+
+function setPieMenu() {
+  document.getElementById("pieBook").addEventListener("click", function() { BrowserUI.doCommand("cmd_star"); NotificationSystem.notify("Bookmarked"); }, false);
+  document.getElementById("pieNTab").addEventListener("click", function() { BrowserUI.newTab() }, false);
+  document.getElementById("pieBack").addEventListener("click", function() { BrowserUI.doCommand("cmd_back"); }, false);
+  document.getElementById("pieForw").addEventListener("click", function() { BrowserUI.doCommand("cmd_forward"); }, false);
 }
 
 let NotificationSystem = {
