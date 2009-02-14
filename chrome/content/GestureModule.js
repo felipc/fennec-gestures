@@ -359,22 +359,74 @@ FennecGestureModule.prototype = {
     return movements;
     
   },
-  
-  _levenshtein: function( str1, str2 ) {
-      // http://kevin.vanzonneveld.net
-      // +   original by: Carlos R. L. Rodrigues (http://www.jsfromhell.com)
-      // +   bugfixed by: Onno Marsman
+    
+  _levenshtein: function (str1, str2, maxThreshold) {
 
-      var s, l = (s = (str1+'').split("")).length, t = (str2 = (str2+'').split("")).length, i, j, m, n;
-      if(!(l || t)) return Math.max(l, t);
-      for(var a = [], i = l + 1; i; a[--i] = [i]);
-      for(i = t + 1; a[0][--i] = i;);
-      for(i = -1, m = s.length; ++i < m;){
-          for(j = -1, n = str2.length; ++j < n;){
-              a[(i *= 1) + 1][(j *= 1) + 1] = Math.min(a[i][j + 1] + 1, a[i + 1][j] + 1, a[i][j] + (s[i] != str2[j]));
-          }
+    if (str1 == str2) return 0;
+
+    /* Get rid of common prefix and suffix */
+    let start = 0, end1 = str1.length, end2 = str2.length;
+    while (str1[start] == str2[start]) {
+      start++;
+    }
+    
+    while(str1[end1-1] == str2[end2-1]) {
+      end1--; 
+      end2--;
+    }
+    
+    if (end1 == start || end2 == start) 
+      return end1 + end2 - start - start;
+
+    str1 = str1.substring(start, end1);
+    str2 = str2.substring(start, end2);
+
+    /* Starting the algorithm */
+    
+    let len = str1.length + 1;
+    let line1 = new Array(len);
+    let line2 = new Array(len);
+
+    maxThreshold = maxThreshold || Math.max(str1.length,str2.length);
+
+    let i, j, cost, min, localValue;
+
+    
+    for (i = 0; i < len; i++) {
+      line1[i] = i;
+    }
+
+    for (i = 1; i < str2.length + 1; i++) {
+
+      line2[0] = i;
+      min = i;
+
+      for (j = 1; j < len; j++) {
+
+        cost = ((str1[j-1] == str2[i-1]) ? 0 : 1);
+
+        localValue = Math.min( line1[j] + 1, line2[j-1] + 1, line1[j-1] + cost)
+        line2[j] = localValue;
+        
+        if (localValue < min)
+          min = localValue;
+
       }
-      return a[l][t];
+
+      if (min > maxThreshold) {
+        // We've reached a point where we know that the value
+        // can't be below our max acceptable value, so we can
+        // stop the algorithm
+        return 100;
+      }
+
+      line1 = line2;
+      line2 = [];
+
+    }
+
+    return line1[len-1];
+
   },
   
   _dumpStep: function (aStep, trailstr) {
