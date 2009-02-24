@@ -15,34 +15,38 @@ function FennecGestureModule(owner) {
 	  The letters qwedcxza corresponds to the directions (look at the keyboard).
 	  */
   this._registerGestures([
-    { name: "Diagonal \\.", action: "c"},
-    { name: "Diagonal ./", action: "z"},
-    { name: "Diagonal .\\", action: "q"},
-    { name: "Diagonal /.", action: "e"},
-    { name: "-> <-", action: "da"},
-    { name: "<- ->", action: "ad"},
-    { name: "X", action: "cae"},
-    { name: "X", action: "zdq"},
-    { name: "Square", action: "dxaw"},
-    { name: "House", action: "wecxa"},
-    { name: "U", action: "xcdew"},
-    { name: "InvertedU", action: "wedcx"},
-    { name: "C", action: "azxcd"},
-    { name: "InvertedC", action: "dcxza"},
-    { name: "Wave", action: "wedcdew"},
-    { name: "Wave", action: "wcwc"},
-    { name: "Star", action: "ecqdz"},
-    { name: "Star", action: "wxqadz"},
-    { name: "Eight", action: "zxcxzaqwewqa"},
-    { name: "Eight", action: "zxcdcxzawewa"},
-    { name: "RotateClockwise", action: "dcxzaqwe"},
-    { name: "RotateClockwise", action: "aqwedcxz"},
-    { name: "Infinity", action: "wecdewqazxzaq"},
-    { name: "Infinity", action: "edcdewqaza"},
-    { name: "Twirl", action: "dcxzawedcxza"},
-    { name: "RotateAnticlock", action: "azxcdewq"},
-    { name: "DoubleClockwise", action: "dcxzaqwedcxzaqwe"},
-    { name: "ClockAnticlock", action: "dcxzaqweazxcdewq"}
+    { name: "Diagonal \\.", action: [4]},
+    { name: "Diagonal ./", action: [6]},
+    { name: "Diagonal .\\", action: [0]},
+    { name: "Diagonal /.", action: [2]},
+    { name: "Left", action: [7]},
+    { name: "Right", action: [3]},
+    { name: "Up", action: [1]},
+    { name: "Down", action: [5]},
+    { name: "-> <-", action: [3,7]},
+    { name: "<- ->", action: [7,3]},
+    { name: "X", action: [4,7,2]},
+    { name: "X", action: [6,3,0]},
+    { name: "Square", action: [3,5,7,1]},
+    { name: "House", action: [1,2,4,5,7]},
+    { name: "U", action: [5,4,3,2,1]},
+    { name: "InvertedU", action: [1,2,3,4,5]},
+    { name: "C", action: [7,6,5,4,3]},
+    { name: "InvertedC", action: [3,4,5,6,7]},
+    { name: "Wave", action: [1,2,3,4,3,2,1]},
+    { name: "Wave", action: [1,4,1,4]},
+    { name: "Star", action: [2,4,0,3,6]},
+    { name: "Star", action: [1,5,0,7,3,6]},
+    { name: "Eight", action: [6,5,4,5,6,7,0,1,2,1,0,7]},
+    { name: "Eight", action: [6,5,4,3,4,5,6,7,1,2,1,7]},
+    { name: "RotateClockwise", action: [3,4,5,6,7,0,1,2]},
+    { name: "RotateClockwise", action: [7,0,1,2,3,4,5,6]},
+    { name: "Infinity", action: [1,2,4,3,2,1,0,7,6,5,6,7,0]},
+    { name: "Infinity", action: [2,3,4,3,2,1,0,7,6,7]},
+    { name: "Twirl", action: [3,4,5,6,7,1,2,3,4,5,6,7]},
+    { name: "RotateAnticlock", action: [7,6,5,4,3,2,1,0]},
+    { name: "DoubleClockwise", action: [3,4,5,6,7,0,1,2,3,4,5,6,7,0,1,2]},
+    { name: "ClockAnticlock", action: [3,4,5,6,7,0,1,2,7,6,5,4,3,2,1,0]}
     ]);
 	  
 }
@@ -52,7 +56,7 @@ FennecGestureModule.prototype = {
   
   _grabbing: false,
 
-  _gestures: {},
+  _gestures: [],
 
   _latestMovement: null,
   
@@ -83,7 +87,31 @@ FennecGestureModule.prototype = {
       this.lastY = Y;
       this.lastDirection = '';
       this.lastDistance = 0;
-    }
+    },
+    
+    applyFilters: function(filters) {
+      
+      for each(aFilter in filters) {
+        this.trail = this.trail.filter(aFilter);
+      }
+      
+    },
+    
+    getSequenceArray: function() {
+      let movements = [];
+
+      let curDirection = -1;
+
+      for (var i = 0; i < this.trail.length; i++) {
+        if (curDirection != this.trail[i].direction) {
+          curDirection = this.trail[i].direction;
+          movements.push(curDirection);
+        }
+      }
+
+      return movements;
+    },
+      
   },
   
   handleEvent: function(aEvent) {
@@ -167,8 +195,8 @@ FennecGestureModule.prototype = {
   
   _registerGestures: function(gestures) {
   
-    for each (let { action: action, name: name } in gestures) {
-      this._gestures[action] = name;
+    for each (gesture in gestures) {
+      this._gestures.push(gesture);
     }
    
   },
@@ -185,7 +213,7 @@ FennecGestureModule.prototype = {
     return this;
   },  
   
-  _newStep: function (direction, distance, x, y) {
+  _newStep: function (direction, distance) {
     let step = new this._step(direction, distance);
     this._movements.trail.push(step);
     this._dumpStep(step);
@@ -214,32 +242,21 @@ FennecGestureModule.prototype = {
     this._movements.lastX = x;
     this._movements.lastY = y;
     
-    /*var mapD = {
-      "->"  :  "->",
-      "<-"  :  "<-",
-      "v"   :  "v ",
-      "^"   :  "^ ",
-      "->v" :  "\\.",
-      "->^" :  "/.",
-      "<-v" :  "./",
-      "<-^" :  ".\\"
-    };*/
-    
-    var mapD = {
-      "->"  :  "d",
-      "<-"  :  "a",
-      "v"   :  "x",
-      "^"   :  "w",
-      "->v" :  "c",
-      "->^" :  "e",
-      "<-v" :  "z",
-      "<-^" :  "q"
+    let mapDirections = {
+      "<-^" :  0,
+      "^"   :  1,
+      "->^" :  2,
+      "->"  :  3,
+      "->v" :  4,
+      "v"   :  5,
+      "<-v" :  6,
+      "<-"  :  7
     };
     
     let direction = this._composeDirection(dx, dy, adx, ady);
 
-    //map the composed direction to a single letter (needed for Levenshtein)
-    direction = mapD[direction];
+    //map the composed direction to a single unit (needed for Levenshtein)
+    direction = mapDirections[direction];
     
     if (direction == this._movements.lastDirection) {
       /* If last tracked movement didn't change direction, combine
@@ -273,7 +290,6 @@ FennecGestureModule.prototype = {
     return direction;
   },
   
-  
   _processGesture: function() {
     
     /* This is the main function that detects which gesture was done */
@@ -283,18 +299,20 @@ FennecGestureModule.prototype = {
     let average = total / this._movements.trail.length;
     
     /* Filter out movements below 30% of average distance.
-      This helps filter out involuntary jigging */
+      This helps filter out involuntary jigging */  
     let filterOut = average * 0.3;
-    let filteredTrail = this._movements.trail.filter(
-                          function(x) x.distance > filterOut);
+    let averageFilter = function(x) x.distance > filterOut;
+    
+    this._movements.applyFilters([averageFilter]);
+  
     
     
     dump("\n\n_________________\nAverage: " + average + " * 0.3 = " +
           filterOut +"\n_________________\nFiltered Trail:\n\n");
           
-    this._dumpTrail(filteredTrail);
-    
-    let movs = this._makeTrailString(filteredTrail);
+    this._dumpTrail();
+
+    let movs = this._movements.getSequenceArray();
         
     dump("\nResulting Movements:\n" + movs + "\n");
     
@@ -311,24 +329,24 @@ FennecGestureModule.prototype = {
     
     dump("\n\nLevenshtein:\n--------------\n");
     
-    let matchTable = [0, 0, 0, 1, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5];
+    let matchTable = [-1, 0, 0, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5];
     
-    for (let [movements, gestureName] in Iterator(this._gestures)) {
+    for each (gesture in this._gestures) {
       
        /* Calculate the Levenshtein value for the current movement.
         A smaller value means a most likely match */
-       curValue = this._levenshtein (movs, movements);
+       curValue = this._levenshtein (movs, gesture.action);
     
        if (curValue < winningVal) {
          winningVal = curValue;
-         winningName = gestureName;
-         winningMov = movements;
+         winningName = gesture.name;
+         winningMov = gesture.action;
        }
        
-       dump(gestureName + ": " + curValue + "\n");
+       dump(gesture.name + ": " + curValue + "\n");
     }
 
-    let matchValue = matchTable[winningMov.length] || 5; //usually will be 2
+    let matchValue = (winningMov.length > matchTable.length) ? 6 : matchTable[winningMov.length];
 
     let gEvent = document.createEvent("Events");
     if (winningVal <= matchValue) {
@@ -347,75 +365,73 @@ FennecGestureModule.prototype = {
     return this._latestMovement;
   },  
   
-  _makeTrailString: function(trail) {
-    
-    /* Concats every movement in a string and removes again consecutive
-      movements in the same direction that might have been introduced after
-      filtering */
-    
-    let movements = '';
-    
-    let curDirection = '';
-    
-    for (var i = 0; i < trail.length; i++) {
-      if (curDirection != trail[i].direction) {
-        curDirection = trail[i].direction;
-        movements += curDirection;
-      }
-    }
-    
-    return movements;
-    
-  },
-    
-  _levenshtein: function (str1, str2, maxThreshold) {
-
-    if (str1 == str2) return 0;
+  _levCostTable: [
+         /*  q  w  e  d  c  x  z  a  */
+  /* q */ [  0, 1, 1, 2, 2, 2, 1, 1 ],
+  /* w */ [  1, 0, 1, 2, 2, 2, 2, 2 ],
+  /* e */ [  1, 1, 0, 1, 1, 2, 2, 2 ],
+  /* d */ [  2, 2, 1, 0, 1, 2, 2, 2 ],
+  /* c */ [  2, 2, 1, 1, 0, 1, 1, 2 ],
+  /* x */ [  2, 2, 2, 2, 1, 0, 1, 2 ],
+  /* z */ [  1, 2, 2, 2, 1, 1, 0, 1 ],
+  /* a */ [  1, 2, 2, 2, 2, 2, 1, 0 ]
+  ],
+  
+  _levenshtein: function (seq1, seq2, maxThreshold) {
 
     /* Get rid of common prefix and suffix */
-    let start = 0, end1 = str1.length, end2 = str2.length;
-    while (str1[start] == str2[start]) {
+    let start = 0, end1 = seq1.length, end2 = seq2.length;
+    let smallest = Math.min(end1, end2);
+
+    while ( (start < smallest) && seq1[start] == seq2[start]) {
       start++;
     }
-    
-    while(str1[end1-1] == str2[end2-1]) {
+
+    while(end1 > start && end2 > start && seq1[end1-1] == seq2[end2-1]) {
       end1--; 
       end2--;
     }
-    
-    if (end1 == start || end2 == start) 
-      return end1 + end2 - start - start;
 
-    str1 = str1.substring(start, end1);
-    str2 = str2.substring(start, end2);
+    if (end1 == start || end2 == start) {
+      //simple insertions with common prefix and suffix
+      return end1 + end2 - start - start;
+    }
+
+    if (start > end1 || start > end2) {
+      return 0;
+    }
+
+    seq1 = seq1.slice(start, end1);
+    seq2 = seq2.slice(start, end2);
 
     /* Starting the algorithm */
-    
-    let len = str1.length + 1;
+
+    let len = seq1.length + 1;
     let line1 = new Array(len);
     let line2 = new Array(len);
 
-    maxThreshold = maxThreshold || Math.max(str1.length,str2.length);
+    maxThreshold = maxThreshold || Math.max(seq1.length,seq2.length);
 
     let i, j, cost, min, localValue;
 
-    
+
     for (i = 0; i < len; i++) {
       line1[i] = i;
     }
 
-    for (i = 1; i < str2.length + 1; i++) {
+    for (i = 1; i < seq2.length + 1; i++) {
 
       line2[0] = i;
       min = i;
 
       for (j = 1; j < len; j++) {
 
-        cost = ((str1[j-1] == str2[i-1]) ? 0 : 1);
+        //cost = ((seq1[j-1] == seq2[i-1]) ? 0 : 1);
+        cost = this._levCostTable[ seq1[j-1] ][ seq2[i-1] ];
 
         localValue = Math.min( line1[j] + 1, line2[j-1] + 1, line1[j-1] + cost)
         line2[j] = localValue;
-        
+
         if (localValue < min)
           min = localValue;
 
