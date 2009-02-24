@@ -4,8 +4,6 @@
 function FennecGestureModule(owner) {
 	this._owner = owner;
 	
-	dump("Creating gesture module with owner: " + owner);
-	
 	/* Note: names doesn't need to be unique.
 	  This way it's possible to register a same gestures with various
 	  starting points. Example: RotateClockwise starting at top or at bottom.
@@ -148,8 +146,6 @@ FennecGestureModule.prototype = {
       this._preGrabData.reset();
       this._owner.grab(this);
       this._startGesture(aEvent);
-
-      dump("Gesture Starting\n");
       
       document.getElementById("containerForCanvas").hidden = false;
       let canvas = document.getElementById("trailCanvas");
@@ -158,8 +154,6 @@ FennecGestureModule.prototype = {
         this._cv.lineJoin = 'round';
         this._cv.beginPath();
         this._cv.moveTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
-      } else {
-        dump("Could not get context\n");
       }
       
     }    
@@ -178,17 +172,12 @@ FennecGestureModule.prototype = {
     this.direction = direction;
     this.distance = distance;
     
-    this.toString = function() {
-      return "[dist: " + this.distance + ", direction: " + this.direction + "]";
-    }
-    
     return this;
   },  
   
   _newStep: function (direction, distance, x, y) {
     let step = new this._step(direction, distance);
     this._movements.trail.push(step);
-    this._dumpStep(step);
   },
   
   _startGesture: function(aEvent) {
@@ -214,18 +203,8 @@ FennecGestureModule.prototype = {
     this._movements.lastX = x;
     this._movements.lastY = y;
     
-    /*var mapD = {
-      "->"  :  "->",
-      "<-"  :  "<-",
-      "v"   :  "v ",
-      "^"   :  "^ ",
-      "->v" :  "\\.",
-      "->^" :  "/.",
-      "<-v" :  "./",
-      "<-^" :  ".\\"
-    };*/
     
-    var mapD = {
+    let mapDirections = {
       "->"  :  "d",
       "<-"  :  "a",
       "v"   :  "x",
@@ -239,7 +218,7 @@ FennecGestureModule.prototype = {
     let direction = this._composeDirection(dx, dy, adx, ady);
 
     //map the composed direction to a single letter (needed for Levenshtein)
-    direction = mapD[direction];
+    direction = mapDirections[direction];
     
     if (direction == this._movements.lastDirection) {
       /* If last tracked movement didn't change direction, combine
@@ -276,8 +255,6 @@ FennecGestureModule.prototype = {
   
   _processGesture: function() {
     
-    /* This is the main function that detects which gesture was done */
-    
     //Verify the average travel distance of movements
     let total = this._movements.trail.reduce(function(a,b) a + b.distance, 0);
     let average = total / this._movements.trail.length;
@@ -288,11 +265,6 @@ FennecGestureModule.prototype = {
     let filteredTrail = this._movements.trail.filter(
                           function(x) x.distance > filterOut);
     
-    
-    dump("\n\n_________________\nAverage: " + average + " * 0.3 = " +
-          filterOut +"\n_________________\nFiltered Trail:\n\n");
-          
-    this._dumpTrail(filteredTrail);
     
     let movs = this._makeTrailString(filteredTrail);
         
@@ -305,13 +277,11 @@ FennecGestureModule.prototype = {
     
   },
   
+  _matchThresholds: [-1, 0, 0, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5],
+  
   _bestMatch: function (movs) {
     
     let winningName = '', winningVal = 100, curValue = '', winningMov;
-    
-    dump("\n\nLevenshtein:\n--------------\n");
-    
-    let matchTable = [0, 0, 0, 1, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5];
     
     for (let [movements, gestureName] in Iterator(this._gestures)) {
       
@@ -328,16 +298,21 @@ FennecGestureModule.prototype = {
        dump(gestureName + ": " + curValue + "\n");
     }
 
-    let matchValue = matchTable[winningMov.length] || 5; //usually will be 2
+    let matchValue = (winningMov.length >= this._matchThresholds.length)
+      ? 6
+      : this._matchThresholds[winningMov.length];
 
     let gEvent = document.createEvent("Events");
+    
     if (winningVal <= matchValue) {
-      dump("\nBest match: " + winningName + "\n\n");
       gEvent.initEvent("Gesture_" + winningName, true, false);
       document.dispatchEvent(gEvent);
+      
+      dump("\nBest match: " + winningName + "\n\n");
     } else {
-      gEvent.initEvent("Gesture_Unrecognized", true, false);
+      gEvent.initEvent("GestureUnrecognized", true, false);
       document.dispatchEvent(gEvent);
+
       dump("\nNo best match\n\n");
     }
   
@@ -435,21 +410,6 @@ FennecGestureModule.prototype = {
 
     return line1[len-1];
 
-  },
-  
-  _dumpStep: function (aStep, trailstr) {
-    let mystr = trailstr || "!";
-    dump (mystr + aStep + "\n");
-  },
-  
-  _dumpTrail: function (arr) {
-    
-    let trail = arr || this._movements.trail;
-    
-    let i;
-    for (i = 0; i < trail.length; i++) {
-      this._dumpStep(trail[i]);
-    }
   },
   
 }
