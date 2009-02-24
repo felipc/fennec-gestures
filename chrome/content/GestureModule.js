@@ -353,7 +353,7 @@ FennecGestureModule.prototype = {
       start++;
     }
     
-    while(str1[end1-1] == str2[end2-1]) {
+    while(end1 > start && end2 > start && str1[end1-1] == str2[end2-1]) {
       end1--; 
       end2--;
     }
