@@ -62,9 +62,11 @@ FennecGestureModule.prototype = {
     firstClickX: 0,
     firstClickY: 0,
     time: Date.now(),
+    shouldGrab: false,
 
     reset: function() {
       this.time = 0;
+      this.shouldGrab = false;
     }
   },
 
@@ -90,13 +92,12 @@ FennecGestureModule.prototype = {
         this._onMouseDown(aEvent);
         break;
       case "mouseup":
-      case "mouseout":
-        this._onMouseOut(aEvent);
+        this._onMouseUp(aEvent);
         break;
       case "mousemove":
         this._onMouseMove(aEvent);
         break;
-      }
+    }
   },
   
   cancelPending: function() {
@@ -116,25 +117,12 @@ FennecGestureModule.prototype = {
       this._preGrabData.firstClickY = aEvent.screenY;
       this._preGrabData.time = Date.now();
     } else {
-      //let's grab the input, i.e. consider that the user is starting a gesture
-      this._grabbing = true;
-      this._owner.grab(this);
-      this._startGesture(aEvent);
-      document.getElementById("containerForCanvas").hidden = false;
-      let canvas = document.getElementById("trailCanvas");
-      if (canvas.getContext) {
-        this._cv = canvas.getContext('2d');
-        this._cv.lineJoin = 'round';
-        this._cv.beginPath();
-        this._cv.moveTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
-      } else {
-        dump("Could not get context\n");
-      }
+      this._preGrabData.shouldGrab = true;
     }
     
   },
 
-  _onMouseOut: function(aEvent) {
+  _onMouseUp: function(aEvent) {
     if (this._grabbing) {
       this._grabbing = false;
       this._owner.ungrab(this);
@@ -152,9 +140,29 @@ FennecGestureModule.prototype = {
 
       this._cv.lineTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
       this._cv.stroke();
-
-
     }
+    
+    if (this._preGrabData.shouldGrab) {
+
+      this._grabbing = true;
+      this._preGrabData.reset();
+      this._owner.grab(this);
+      this._startGesture(aEvent);
+
+      dump("Gesture Starting\n");
+      
+      document.getElementById("containerForCanvas").hidden = false;
+      let canvas = document.getElementById("trailCanvas");
+      if (canvas.getContext) {
+        this._cv = canvas.getContext('2d');
+        this._cv.lineJoin = 'round';
+        this._cv.beginPath();
+        this._cv.moveTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
+      } else {
+        dump("Could not get context\n");
+      }
+      
+    }    
   },
   
   _registerGestures: function(gestures) {
