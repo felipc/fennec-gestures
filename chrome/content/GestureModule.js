@@ -129,7 +129,7 @@ FennecGestureModule.prototype = {
       this._grabbing = false;
       this._owner.ungrab(this);
       this._cv.closePath();
-      this._cv.clearRect(0,0,300,300);
+      this._cv.clearRect(0,0,this._cv.canvas.width,this._cv.canvas.height);
       this._processGesture();
       this._preGrabData.reset();
       document.getElementById("containerForCanvas").hidden = true;
@@ -140,7 +140,8 @@ FennecGestureModule.prototype = {
     if (this._grabbing) {
       this._pushMovement(aEvent);
 
-      this._cv.lineTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
+      //this._cv.lineTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
+      this._cv.lineTo(aEvent.pageX, aEvent.pageY);
       this._cv.stroke();
     }
     
@@ -157,7 +158,8 @@ FennecGestureModule.prototype = {
         this._cv = canvas.getContext('2d');
         this._cv.lineJoin = 'round';
         this._cv.beginPath();
-        this._cv.moveTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
+        //this._cv.moveTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
+        this._cv.moveTo(aEvent.pageX, aEvent.pageY);
       }
       
     }    

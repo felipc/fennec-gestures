@@ -8,8 +8,8 @@
 	<script type="application/x-javascript" src="chrome://fennec-gestures/content/start.js"></script>
 	
 	<stack id="browser-container">
-		<vbox id="containerForCanvas" flex="1" style="-moz-stack-sizing: ignore; left: 0; top: 0; width: 300px; height: 300px; background-color: rgba(0,0,250,0.3);" constraint="ignore-y" hidden="true" mousethrough="always">
-			<html:canvas id="trailCanvas" width="300px" height="300px" mousethrough="always"></html:canvas>
+		<vbox id="containerForCanvas" flex="1" style="-moz-stack-sizing: ignore; left: 0; top: 0; background-color: rgba(250,250,250,0.3);" width="300px" height="300px" constraint="ignore-y" hidden="true" mousethrough="always">
+			<html:canvas id="trailCanvas" width="100%" height="100%" mousethrough="always"></html:canvas>
 		</vbox>
 		
 		<vbox id="notificationContainer" flex="1" style="-moz-stack-sizing:ignore; left: 50px; top: 35px; background-color: rgba(0,0,0,0.7); width: 600px; height: 60px; -moz-border-radius: 4px" constraint="vp-relative" hidden="true">
