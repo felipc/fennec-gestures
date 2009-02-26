@@ -1,8 +1,13 @@
 window.addEventListener('load', function() {
   
-  let Gestures = new FennecGestureModule(ih);
-  ih._modules.push(Gestures);
-  window.Gestures = Gestures;
+  let GestureHandler = new GestureHandlerModule(ih);
+  ih._modules.push(GestureHandler);
+
+  let GestureEngine = new FennecGestures();
+  window.Gestures = GestureEngine;
+  
+  registerGestures(GestureEngine);
+
   setGestureListeners();
   setPieMenu();
   

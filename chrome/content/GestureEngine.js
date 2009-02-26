@@ -1,57 +1,24 @@
+
+
+
 /**
  * Gestures handling code
  */
-function FennecGestureModule(owner) {
-	this._owner = owner;
-	
-	/* Note: names doesn't need to be unique.
-	  This way it's possible to register a same gestures with various
-	  starting points. Example: RotateClockwise starting at top or at bottom.
-	  
-	  Currently it's better to list shortest actions first.
-	  
-	  The letters qwedcxza corresponds to the directions (look at the keyboard).
-	  */
-  this._registerGestures([
-    { name: "Diagonal \\.", action: "c"},
-    { name: "Diagonal ./", action: "z"},
-    { name: "Diagonal .\\", action: "q"},
-    { name: "Diagonal /.", action: "e"},
-    { name: "Up", action: "w"},
-    { name: "Down", action: "x"},
-    { name: "Left", action: "a"},
-    { name: "Right", action: "d"},
-    { name: "-> <-", action: "da"},
-    { name: "<- ->", action: "ad"},
-    { name: "X", action: "cae"},
-    { name: "X", action: "zdq"},
-    { name: "Square", action: "dxaw"},
-    { name: "House", action: "wecxa"},
-    { name: "U", action: "xcdew"},
-    { name: "InvertedU", action: "wedcx"},
-    { name: "C", action: "azxcd"},
-    { name: "InvertedC", action: "dcxza"},
-    { name: "Wave", action: "wedcdew"},
-    { name: "Wave", action: "wcwc"},
-    { name: "Star", action: "ecqdz"},
-    { name: "Star", action: "wxqadz"},
-    { name: "Eight", action: "zxcxzaqwewqa"},
-    { name: "Eight", action: "zxcdcxzawewa"},
-    { name: "RotateClockwise", action: "dcxzaqwe"},
-    { name: "RotateClockwise", action: "aqwedcxz"},
-    { name: "Infinity", action: "wecdewqazxzaq"},
-    { name: "Infinity", action: "edcdewqaza"},
-    { name: "Twirl", action: "dcxzawedcxza"},
-    { name: "RotateAnticlock", action: "azxcdewq"},
-    { name: "DoubleClockwise", action: "dcxzaqwedcxzaqwe"},
-    { name: "ClockAnticlock", action: "dcxzaqweazxcdewq"}
-    ]);
-	  
+function FennecGestures() {
+
+	let self = this;
+
+	window.addEventListener("GestureStarted", function() { self._gestureStarted(); }, false);
+	window.addEventListener("GestureEnded"  , function() { self._gestureEnded();   }, false);
+
+	window.addEventListener("mousemove", function(aEvent) { self._mouseMove(aEvent); }, false);
+
+  return this;
+
 }
 
-FennecGestureModule.prototype = {
-  _owner: null,
-  
+FennecGestures.prototype = {
+
   _grabbing: false,
 
   _gestures: {},
@@ -59,18 +26,6 @@ FennecGestureModule.prototype = {
   _latestMovement: null,
   
   _cv: null,
-
-  _preGrabData: {
-    firstClickX: 0,
-    firstClickY: 0,
-    time: Date.now(),
-    shouldGrab: false,
-
-    reset: function() {
-      this.time = 0;
-      this.shouldGrab = false;
-    }
-  },
 
   _movements: {
     trail: [],
@@ -88,55 +43,39 @@ FennecGestureModule.prototype = {
     }
   },
   
-  handleEvent: function(aEvent) {
-    switch (aEvent.type) {
-      case "mousedown":
-        this._onMouseDown(aEvent);
-        break;
-      case "mouseup":
-        this._onMouseUp(aEvent);
-        break;
-      case "mousemove":
-        this._onMouseMove(aEvent);
-        break;
-    }
-  },
-  
-  cancelPending: function() {
-    this._preGrabData.reset();
-  },
-  
-  _onMouseDown: function(aEvent) {
+  _gestureStarted: function() {
     
-    let adx = Math.abs(aEvent.screenX - this._preGrabData.firstClickX);
-    let ady = Math.abs(aEvent.screenY - this._preGrabData.firstClickY);
+    dump("Engine: Gesture Started\n");
     
-    let timeDiff = Date.now() - this._preGrabData.time;
-    
-    if (adx > 10 || ady > 10 || timeDiff > 1000) {
-      //won't grab, only update values
-      this._preGrabData.firstClickX = aEvent.screenX;
-      this._preGrabData.firstClickY = aEvent.screenY;
-      this._preGrabData.time = Date.now();
-    } else {
-      this._preGrabData.shouldGrab = true;
+    this._shouldGrab = true;
+
+    document.getElementById("containerForCanvas").hidden = false;
+    let canvas = document.getElementById("trailCanvas");
+
+    if (canvas.getContext) {
+      this._cv = canvas.getContext('2d');
+      this._cv.lineJoin = 'round';
+      this._cv.beginPath();
+      //this._cv.moveTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
+      this._cv.moveTo(aEvent.pageX, aEvent.pageY);
     }
     
+  },
+  
+  _gestureEnded: function() {
+    
+    dump("Engine: Gesture ended\n");
+    
+    this._grabbing = false;
+    this._processGesture();
+
+    this._cv.closePath();
+    this._cv.clearRect(0,0,this._cv.canvas.width,this._cv.canvas.height);
+    document.getElementById("containerForCanvas").hidden = true;
   },
 
-  _onMouseUp: function(aEvent) {
-    if (this._grabbing) {
-      this._grabbing = false;
-      this._owner.ungrab(this);
-      this._cv.closePath();
-      this._cv.clearRect(0,0,this._cv.canvas.width,this._cv.canvas.height);
-      this._processGesture();
-      this._preGrabData.reset();
-      document.getElementById("containerForCanvas").hidden = true;
-    }
-  },
-  
-  _onMouseMove: function(aEvent) {
+  _mouseMove: function(aEvent) {
+    //dump("MouseMove " + (this._grabbing) ? 'true\n' : 'false\n');
     if (this._grabbing) {
       this._pushMovement(aEvent);
 
@@ -145,27 +84,15 @@ FennecGestureModule.prototype = {
       this._cv.stroke();
     }
     
-    if (this._preGrabData.shouldGrab) {
-
+    if (this._shouldGrab) {
+      this._shouldGrab = false;
       this._grabbing = true;
-      this._preGrabData.reset();
-      this._owner.grab(this);
       this._startGesture(aEvent);
+    }
       
-      document.getElementById("containerForCanvas").hidden = false;
-      let canvas = document.getElementById("trailCanvas");
-      if (canvas.getContext) {
-        this._cv = canvas.getContext('2d');
-        this._cv.lineJoin = 'round';
-        this._cv.beginPath();
-        //this._cv.moveTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
-        this._cv.moveTo(aEvent.pageX, aEvent.pageY);
-      }
-      
-    }    
   },
   
-  _registerGestures: function(gestures) {
+  registerGestures: function(gestures) {
   
     for each (let { action: action, name: name } in gestures) {
       this._gestures[action] = name;
@@ -193,6 +120,8 @@ FennecGestureModule.prototype = {
     
   _pushMovement: function(aEvent) {
 
+    dump("1");
+
     let x = aEvent.screenX;
     let y = aEvent.screenY;
     let dx = this._movements.lastX - x;
@@ -200,16 +129,19 @@ FennecGestureModule.prototype = {
     let adx = Math.abs(dx);
     let ady = Math.abs(dy);
 
-    let distance = Math.sqrt(dx*dx + dy*dy);
+    dump("2");
 
+    let distance = Math.sqrt(dx*dx + dy*dy);
+    dump("3");
     if (adx < 5 && ady < 5) {
+      dump("!\n");
       return;
     }
-  
+      dump("4");
     this._movements.lastX = x;
     this._movements.lastY = y;
     
-    
+        dump("5");
     let mapDirections = {
       "->"  :  "d",
       "<-"  :  "a",
@@ -220,20 +152,22 @@ FennecGestureModule.prototype = {
       "<-v" :  "z",
       "<-^" :  "q"
     };
-    
+        dump("6");    
     let direction = this._composeDirection(dx, dy, adx, ady);
-
+        dump("7");
     //map the composed direction to a single letter (needed for Levenshtein)
     direction = mapDirections[direction];
-    
+            dump("8");
     if (direction == this._movements.lastDirection) {
       /* If last tracked movement didn't change direction, combine
         both movements in only one, increasing its travel distance */
       distance += (this._movements.trail.pop()).distance;
     }
-
+        dump("9");
     this._movements.lastDirection = direction;
+            dump("0");
     this._newStep(direction, distance);
+            dump("!\n");
      
   },
   
@@ -271,36 +205,34 @@ FennecGestureModule.prototype = {
     let filteredTrail = this._movements.trail.filter(
                           function(x) x.distance > filterOut);
     
-    
     let movs = this._makeTrailString(filteredTrail);
-        
+
     dump("\nResulting Movements:\n" + movs + "\n");
     
     this._latestMovement = movs;
-    
+
     //Check which is the best match among the registered gestures
     this._bestMatch(movs);
-    
   },
   
   _matchThresholds: [-1, 0, 0, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5],
   
   _bestMatch: function (movs) {
     
-    let winningName = '', winningVal = 100, curValue = '', winningMov;
+    let winningName = '', winningVal = 100, curValue = '', winningMov = '';
     
     for (let [movements, gestureName] in Iterator(this._gestures)) {
       
        /* Calculate the Levenshtein value for the current movement.
         A smaller value means a most likely match */
        curValue = this._levenshtein (movs, movements);
-    
+
        if (curValue < winningVal) {
          winningVal = curValue;
          winningName = gestureName;
          winningMov = movements;
        }
-       
+
        dump(gestureName + ": " + curValue + "\n");
     }
 

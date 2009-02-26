@@ -3,7 +3,8 @@
 	xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:svg="http://www.w3.org/2000/svg">
 	<script type="application/x-javascript" src="chrome://fennec-gestures/content/set-debug-prefs.js"></script>
-	<script type="application/x-javascript" src="chrome://fennec-gestures/content/GestureModule.js"></script>
+	<script type="application/x-javascript" src="chrome://fennec-gestures/content/GestureHandler.js"></script>
+	<script type="application/x-javascript" src="chrome://fennec-gestures/content/GestureEngine.js"></script>
 	<script type="application/x-javascript" src="chrome://fennec-gestures/content/ux.js"></script>
 	<script type="application/x-javascript" src="chrome://fennec-gestures/content/start.js"></script>
 	

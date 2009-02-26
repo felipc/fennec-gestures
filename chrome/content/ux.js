@@ -11,6 +11,7 @@ function setGestureListeners() {
   window.addEventListener("Gesture_Square", function() { NotificationSystem.notify("Square!"); }, false);
 
   window.addEventListener("Gesture_X", function() { BrowserUI.closeTab(Browser._currentTab); }, false);
+  window.addEventListener("Gesture_DiagonalC", function() { BrowserUI.newTab(); }, false);
   window.addEventListener("Gesture_RotateClockwise", function() { Browser.canvasBrowser.zoom(-1) }, false);
   window.addEventListener("Gesture_RotateAnticlock", function() { Browser.canvasBrowser.zoom( 1) }, false);
   window.addEventListener("Gesture_Left", function() { BrowserUI.doCommand("cmd_back"); }, false);
@@ -91,3 +92,51 @@ let NotificationSystem = {
     }, 2000);
   }
 };
+
+
+function registerGestures(engine) {
+
+	/* Note: names doesn't need to be unique.
+	  This way it's possible to register a same gestures with various
+	  starting points. Example: RotateClockwise starting at top or at bottom.
+	  
+	  Currently it's better to list shortest actions first.
+	  
+	  The letters qwedcxza corresponds to the directions (look at the keyboard).
+	  */
+
+  engine.registerGestures([
+    { name: "DiagonalC", action: "c"},
+    { name: "Diagonal ./", action: "z"},
+    { name: "Diagonal .\\", action: "q"},
+    { name: "Diagonal /.", action: "e"},
+    { name: "Up", action: "w"},
+    { name: "Down", action: "x"},
+    { name: "Left", action: "a"},
+    { name: "Right", action: "d"},
+    { name: "-> <-", action: "da"},
+    { name: "<- ->", action: "ad"},
+    { name: "X", action: "cae"},
+    { name: "X", action: "zdq"},
+    { name: "Square", action: "dxaw"},
+    { name: "House", action: "wecxa"},
+    { name: "U", action: "xcdew"},
+    { name: "InvertedU", action: "wedcx"},
+    { name: "C", action: "azxcd"},
+    { name: "InvertedC", action: "dcxza"},
+    { name: "Wave", action: "wedcdew"},
+    { name: "Wave", action: "wcwc"},
+    { name: "Star", action: "ecqdz"},
+    { name: "Star", action: "wxqadz"},
+    { name: "Eight", action: "zxcxzaqwewqa"},
+    { name: "Eight", action: "zxcdcxzawewa"},
+    { name: "RotateClockwise", action: "dcxzaqwe"},
+    { name: "RotateClockwise", action: "aqwedcxz"},
+    { name: "Infinity", action: "wecdewqazxzaq"},
+    { name: "Infinity", action: "edcdewqaza"},
+    { name: "Twirl", action: "dcxzawedcxza"},
+    { name: "RotateAnticlock", action: "azxcdewq"},
+    { name: "DoubleClockwise", action: "dcxzaqwedcxzaqwe"},
+    { name: "ClockAnticlock", action: "dcxzaqweazxcdewq"}
+    ]); 
+}
