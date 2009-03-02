@@ -4,9 +4,9 @@ function GestureHandlerModule(owner) {
 
 GestureHandlerModule.prototype = {
   _owner: null,
-  
+
   _grabbing: false,
-  
+
   _preGrabData: {
     firstClickX: 0,
     firstClickY: 0,
@@ -18,7 +18,7 @@ GestureHandlerModule.prototype = {
       this.shouldGrab = false;
     }
   },
-  
+
   handleEvent: function(aEvent) {
     switch (aEvent.type) {
       case "mousedown":
@@ -32,31 +32,31 @@ GestureHandlerModule.prototype = {
         break;
     }
   },
-  
+
   cancelPending: function() {
     this._preGrabData.reset();
   },
-  
+
   _onMouseMove: function(aEvent) {
     if (this._preGrabData.shouldGrab) {
       this._owner.grab(this);
       this._grabbing = true;
       this._preGrabData.reset();
-      
+
       this._dispatchEvent("GestureStarted", window);
-      
+
       //dump("GestureHandler: Gesture Started\n");
     }
-    
+
   },
-  
+
   _onMouseDown: function(aEvent) {
-    
+
     let adx = Math.abs(aEvent.screenX - this._preGrabData.firstClickX);
     let ady = Math.abs(aEvent.screenY - this._preGrabData.firstClickY);
-    
+
     let timeDiff = Date.now() - this._preGrabData.firstClickTime;
-    
+
     if (adx > 10 || ady > 10 || timeDiff > 1000) {
       //won't grab, only update values
       this._preGrabData.firstClickX = aEvent.screenX;
@@ -69,25 +69,25 @@ GestureHandlerModule.prototype = {
   },
 
   _onMouseUp: function(aEvent) {
-    
+
     if (this._grabbing) {
       this._grabbing = false;
       this._owner.ungrab(this);
       this._preGrabData.reset();
-      
+
       this._dispatchEvent("GestureEnded", window);
-      
+
       //dump("GestureHandler: Gesture ended\n");
     }
-    
+
   },
-  
+
   _dispatchEvent: function(name, destiny) {
-    
+
     let gEvent = document.createEvent("Events");
     gEvent.initEvent(name, true, false);
     destiny.dispatchEvent(gEvent);
-    
+
   }
-  
-}
+
+};
