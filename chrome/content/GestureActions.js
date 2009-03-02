@@ -1,3 +1,15 @@
+/*
+  Assigning gestures to some specific browser actions:
+
+    Star: add to favorite
+    X: close tab
+    Diagonal bottom-down: new tab
+    Rotate clockwise/anticlockwise: zoom in/zoom out
+    Left/Right: back/forward in history
+    Up/Down: previous/next tab
+
+*/
+
 window.addEventListener("Gesture_Star", function() { BrowserUI.doCommand("cmd_star"); }, false);
 window.addEventListener("Gesture_X", function() { BrowserUI.closeTab(Browser._currentTab); }, false);
 window.addEventListener("Gesture_DiagonalC", function() { BrowserUI.newTab(); }, false);

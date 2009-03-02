@@ -21,8 +21,6 @@ FennecGestures.prototype = {
 
   _gestures: {},
 
-  _learningMode: false,
-
   _latestMovement: null,
 
   _movements: {
@@ -162,27 +160,29 @@ FennecGestures.prototype = {
 
   _processGesture: function() {
 
-    //Verify the average travel distance of movements
+    /* Verify the average travel distance of movements
+       and filter out movements below 30% of average.
+       (This helps to filter involuntary movements) */
     let total = this._movements.trail.reduce(function(a,b) a + b.distance, 0);
     let average = total / this._movements.trail.length;
-
-    /* Filter out movements below 30% of average distance.
-      This helps filter out involuntary jigging */
     let filterOut = average * 0.3;
     let filteredTrail = this._movements.trail.filter(
                           function(x) x.distance > filterOut);
 
 
     let movs = this._makeTrailString(filteredTrail);
-
     //dump("\nResulting Movements:\n" + movs + "\n");
 
     this._latestMovement = movs;
 
-    //Check which is the best match among the registered gestures
+    //Check which is the best match among the detected gestures
     this._bestMatch(movs);
   },
 
+  /* This table defines the maximum Levenshtein value (edit-distance) that
+     a gesture of length [pos] can have to be considered a match.
+     e.g.: a gesture with 5 movements can be at most table[5] == 2 movements
+           different from the perfect match */
   _matchThresholds: [-1, 0, 0, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5],
 
   _bestMatch: function (movs) {
@@ -229,14 +229,6 @@ FennecGestures.prototype = {
     return this._latestMovement;
   },
   /* latestMovement: no public setter */
-
-  get learningMode() {
-    return this._learningMode;
-  },
-
-  set learningMode(x) {
-    this._learningMode = x;
-  },
 
   _makeTrailString: function(trail) {
 
@@ -329,12 +321,6 @@ FennecGestures.prototype = {
   },
 
   _dispatchEvent: function(name, destiny) {
-
-    /* On learning mode we don't dispatch events actions.
-     The code will only get GestureEnded from the handler,
-     and then the movements can be grabbed by the
-     latestMovement property */
-    if (this._learningMode) return;
 
     let gEvent = document.createEvent("Events");
     gEvent.initEvent(name, true, false);
