@@ -1,6 +1,3 @@
-
-
-
 /**
  * Gestures handling code
  */
@@ -20,7 +17,8 @@ function FennecGestures() {
 FennecGestures.prototype = {
 
   _grabbing: false,
-
+  _shouldGrab: false,
+  
   _gestures: {},
 
   _learningMode: false,
@@ -57,7 +55,7 @@ FennecGestures.prototype = {
     /* We have two stages: _shouldGrab and _grabbing, because
      we want to ignore the very first mouseMove, because for it
      we don't have the data for the movement (the delta between
-       the previous and the current X and Y */
+     the previous and the current X and Y */
 
     if (this._grabbing) {
       this._pushMovement(aEvent);
@@ -87,7 +85,7 @@ FennecGestures.prototype = {
     return this;
   },  
   
-  _newStep: function (direction, distance, x, y) {
+  _newStep: function (direction, distance) {
     let step = new this._step(direction, distance);
     this._movements.trail.push(step);
   },
