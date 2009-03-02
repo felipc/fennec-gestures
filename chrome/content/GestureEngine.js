@@ -140,7 +140,7 @@ FennecGestures.prototype = {
 
   },
 
-  _composeDirection: function( dx, dy, adx, ady) {
+  _composeDirection: function(dx, dy, adx, ady) {
 
     /* This function detects the direction of the movement,
       checking if it was a straight movement (horizontal or vertical),

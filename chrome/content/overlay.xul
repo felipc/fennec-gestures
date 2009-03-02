@@ -6,6 +6,7 @@
 	<script type="application/x-javascript" src="chrome://fennec-gestures/content/GestureHandler.js"></script>
 	<script type="application/x-javascript" src="chrome://fennec-gestures/content/GestureEngine.js"></script>
 	<script type="application/x-javascript" src="chrome://fennec-gestures/content/GestureTrail.js"></script>
+	<script type="application/x-javascript" src="chrome://fennec-gestures/content/GestureActions.js"></script>
 	<script type="application/x-javascript" src="chrome://fennec-gestures/content/ux.js"></script>
 	<script type="application/x-javascript" src="chrome://fennec-gestures/content/start.js"></script>
 	
