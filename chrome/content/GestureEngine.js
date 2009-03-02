@@ -23,6 +23,8 @@ FennecGestures.prototype = {
 
   _gestures: {},
 
+  _learningMode: false,
+
   _latestMovement: null,
   
   _cv: null,
@@ -56,7 +58,6 @@ FennecGestures.prototype = {
       this._cv = canvas.getContext('2d');
       this._cv.lineJoin = 'round';
       this._cv.beginPath();
-      //this._cv.moveTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
       this._cv.moveTo(aEvent.pageX, aEvent.pageY);
     }
     
@@ -75,11 +76,15 @@ FennecGestures.prototype = {
   },
 
   _mouseMove: function(aEvent) {
-    //dump("MouseMove " + (this._grabbing) ? 'true\n' : 'false\n');
+
+    /* We have two stages: _shouldGrab and _grabbing, because
+     we want to ignore the very first mouseMove, because for it
+     we don't have the data for the movement (the delta between
+       the previous and the current X and Y */
+
     if (this._grabbing) {
       this._pushMovement(aEvent);
 
-      //this._cv.lineTo(aEvent.screenX / 2 - 100, aEvent.screenY / 2);
       this._cv.lineTo(aEvent.pageX, aEvent.pageY);
       this._cv.stroke();
     }
@@ -120,8 +125,6 @@ FennecGestures.prototype = {
     
   _pushMovement: function(aEvent) {
 
-    dump("1");
-
     let x = aEvent.screenX;
     let y = aEvent.screenY;
     let dx = this._movements.lastX - x;
@@ -129,19 +132,16 @@ FennecGestures.prototype = {
     let adx = Math.abs(dx);
     let ady = Math.abs(dy);
 
-    dump("2");
 
     let distance = Math.sqrt(dx*dx + dy*dy);
-    dump("3");
+
     if (adx < 5 && ady < 5) {
-      dump("!\n");
       return;
     }
-      dump("4");
+
     this._movements.lastX = x;
     this._movements.lastY = y;
-    
-        dump("5");
+
     let mapDirections = {
       "->"  :  "d",
       "<-"  :  "a",
@@ -152,23 +152,21 @@ FennecGestures.prototype = {
       "<-v" :  "z",
       "<-^" :  "q"
     };
-        dump("6");    
+
     let direction = this._composeDirection(dx, dy, adx, ady);
-        dump("7");
+
     //map the composed direction to a single letter (needed for Levenshtein)
     direction = mapDirections[direction];
-            dump("8");
+
     if (direction == this._movements.lastDirection) {
       /* If last tracked movement didn't change direction, combine
         both movements in only one, increasing its travel distance */
       distance += (this._movements.trail.pop()).distance;
     }
-        dump("9");
+
     this._movements.lastDirection = direction;
-            dump("0");
     this._newStep(direction, distance);
-            dump("!\n");
-     
+
   },
   
   _composeDirection: function( dx, dy, adx, ady) {
@@ -199,15 +197,17 @@ FennecGestures.prototype = {
     let total = this._movements.trail.reduce(function(a,b) a + b.distance, 0);
     let average = total / this._movements.trail.length;
     
+    
     /* Filter out movements below 30% of average distance.
       This helps filter out involuntary jigging */
     let filterOut = average * 0.3;
     let filteredTrail = this._movements.trail.filter(
                           function(x) x.distance > filterOut);
     
+    
     let movs = this._makeTrailString(filteredTrail);
 
-    dump("\nResulting Movements:\n" + movs + "\n");
+    //dump("\nResulting Movements:\n" + movs + "\n");
     
     this._latestMovement = movs;
 
@@ -233,25 +233,26 @@ FennecGestures.prototype = {
          winningMov = movements;
        }
 
-       dump(gestureName + ": " + curValue + "\n");
+       //dump(gestureName + ": " + curValue + "\n");
     }
 
     let matchValue = (winningMov.length >= this._matchThresholds.length)
       ? 6
       : this._matchThresholds[winningMov.length];
 
-    let gEvent = document.createEvent("Events");
     
     if (winningVal <= matchValue) {
-      gEvent.initEvent("Gesture_" + winningName, true, false);
-      document.dispatchEvent(gEvent);
-      
-      dump("\nBest match: " + winningName + "\n\n");
-    } else {
-      gEvent.initEvent("GestureUnrecognized", true, false);
-      document.dispatchEvent(gEvent);
 
-      dump("\nNo best match\n\n");
+      this._dispatchEvent("Gesture_" + winningName, window);
+
+      //dump("\nBest match: " + winningName + "\n\n");
+
+    } else {
+
+      this._dispatchEvent("GestureUnrecognized", window);
+
+      //dump("\nNo best match\n\n");
+      
     }
   
   },
@@ -259,6 +260,15 @@ FennecGestures.prototype = {
   get latestMovement() {
     return this._latestMovement;
   },  
+  /* latestMovement: no public setter */
+  
+  get learningMode() {
+    return this._learningMode;
+  },
+  
+  set learningMode(x) {
+    this._learningMode = x;
+  },
   
   _makeTrailString: function(trail) {
     
@@ -349,5 +359,18 @@ FennecGestures.prototype = {
     return line1[len-1];
 
   },
-  
+
+  _dispatchEvent: function(name, destiny) {
+    
+    /* On learning mode we don't dispatch events actions.
+     The code will only get GestureEnded from the handler,
+     and then the movements can be grabbed by the
+     latestMovement property */
+    if (this._learningMode) return;
+    
+    let gEvent = document.createEvent("Events");
+    gEvent.initEvent(name, true, false);
+    destiny.dispatchEvent(gEvent);
+    
+  }  
 }
