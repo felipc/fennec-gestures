@@ -6,6 +6,8 @@ window.addEventListener('load', function() {
   let GestureEngine = new FennecGestures();
   window.Gestures = GestureEngine;
   
+  new GestureTrail();
+  
   registerGestures(GestureEngine);
 
   setGestureListeners();

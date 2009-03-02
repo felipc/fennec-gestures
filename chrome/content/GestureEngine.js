@@ -26,8 +26,6 @@ FennecGestures.prototype = {
   _learningMode: false,
 
   _latestMovement: null,
-  
-  _cv: null,
 
   _movements: {
     trail: [],
@@ -46,33 +44,12 @@ FennecGestures.prototype = {
   },
   
   _gestureStarted: function() {
-    
-    dump("Engine: Gesture Started\n");
-    
     this._shouldGrab = true;
-
-    document.getElementById("containerForCanvas").hidden = false;
-    let canvas = document.getElementById("trailCanvas");
-
-    if (canvas.getContext) {
-      this._cv = canvas.getContext('2d');
-      this._cv.lineJoin = 'round';
-      this._cv.beginPath();
-      this._cv.moveTo(aEvent.pageX, aEvent.pageY);
-    }
-    
   },
   
   _gestureEnded: function() {
-    
-    dump("Engine: Gesture ended\n");
-    
     this._grabbing = false;
     this._processGesture();
-
-    this._cv.closePath();
-    this._cv.clearRect(0,0,this._cv.canvas.width,this._cv.canvas.height);
-    document.getElementById("containerForCanvas").hidden = true;
   },
 
   _mouseMove: function(aEvent) {
@@ -84,9 +61,6 @@ FennecGestures.prototype = {
 
     if (this._grabbing) {
       this._pushMovement(aEvent);
-
-      this._cv.lineTo(aEvent.pageX, aEvent.pageY);
-      this._cv.stroke();
     }
     
     if (this._shouldGrab) {
