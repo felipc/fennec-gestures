@@ -53,9 +53,9 @@ FennecGestures.prototype = {
   _mouseMove: function(aEvent) {
 
     /* We have two stages: _shouldGrab and _grabbing, because
-     we want to ignore the very first mouseMove, because for it
+     we want to ignore the very first mouseMove, since for it
      we don't have the data for the movement (the delta between
-     the previous and the current X and Y */
+     the previous and the current X and Y) */
 
     if (this._grabbing) {
       this._pushMovement(aEvent);
@@ -345,4 +345,48 @@ FennecGestures.prototype = {
     destiny.dispatchEvent(gEvent);
     
   }  
-}
+};
+
+/* Engine startup */
+let GestureEngine = new FennecGestures();
+
+GestureEngine.registerGestures([
+  { name: "DiagonalC", action: "c"},
+  { name: "Diagonal ./", action: "z"},
+  { name: "Diagonal .\\", action: "q"},
+  { name: "Diagonal /.", action: "e"},
+  { name: "Up", action: "w"},
+  { name: "Down", action: "x"},
+  { name: "Left", action: "a"},
+  { name: "Right", action: "d"},
+  { name: "-> <-", action: "da"},
+  { name: "<- ->", action: "ad"},
+  { name: "X", action: "cae"},
+  { name: "X", action: "zdq"},
+  { name: "Square", action: "dxaw"},
+  { name: "House", action: "wecxa"},
+  { name: "U", action: "xcdew"},
+  { name: "InvertedU", action: "wedcx"},
+  { name: "C", action: "azxcd"},
+  { name: "InvertedC", action: "dcxza"},
+  { name: "Wave", action: "wedcdew"},
+  { name: "Wave", action: "wcwc"},
+  { name: "Star", action: "ecqdz"},
+  { name: "Star", action: "wxqadz"},
+  { name: "Eight", action: "zxcxzaqwewqa"},
+  { name: "Eight", action: "zxcdcxzawewa"},
+  { name: "RotateClockwise", action: "dcxzaqwe"},
+  { name: "RotateClockwise", action: "aqwedcxz"},
+  { name: "Infinity", action: "wecdewqazxzaq"},
+  { name: "Infinity", action: "edcdewqaza"},
+  { name: "Twirl", action: "dcxzawedcxza"},
+  { name: "RotateAnticlock", action: "azxcdewq"},
+  { name: "DoubleClockwise", action: "dcxzaqwedcxzaqwe"},
+  { name: "ClockAnticlock", action: "dcxzaqweazxcdewq"}
+]);
+
+/* For outside access as API:
+  currently defines "public":
+    - latestMovement getter
+    - registerGestures method */
+window.Gestures = GestureEngine;

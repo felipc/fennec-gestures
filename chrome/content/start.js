@@ -2,9 +2,6 @@ window.addEventListener('load', function() {
   
   let GestureHandler = new GestureHandlerModule(ih);
   ih._modules.push(GestureHandler);
-
-  let GestureEngine = new FennecGestures();
-  window.Gestures = GestureEngine;
   
   new GestureTrail();
   
