@@ -45,7 +45,7 @@ GestureHandlerModule.prototype = {
       
       this._dispatchEvent("GestureStarted", window);
       
-      dump("Handler: Gesture Started\n");
+      //dump("GestureHandler: Gesture Started\n");
     }
     
   },
@@ -77,7 +77,7 @@ GestureHandlerModule.prototype = {
       
       this._dispatchEvent("GestureEnded", window);
       
-      dump("Handler: Gesture ended\n");
+      //dump("GestureHandler: Gesture ended\n");
     }
     
   },

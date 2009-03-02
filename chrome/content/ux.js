@@ -7,7 +7,7 @@ function setGestureListeners() {
   window.addEventListener("Gesture_Eight", function() { NotificationSystem.notify("Hello World"); }, false);
   window.addEventListener("Gesture_Twirl", function() { NotificationSystem.notify("Do the twist!"); }, false);
   window.addEventListener("Gesture_House", function() { getBrowser().loadURI("http://www.mozilla.com", null, null, false); }, false);
-  window.addEventListener("Gesture_Infinity", function() { NotificationSystem.notify("∞"); }, false);
+  window.addEventListener("Gesture_Infinity", function() { document.getElementById("pieMenu").hidden = false; }, false);
   window.addEventListener("Gesture_Square", function() { NotificationSystem.notify("Square!"); }, false);
 
   window.addEventListener("Gesture_X", function() { BrowserUI.closeTab(Browser._currentTab); }, false);
