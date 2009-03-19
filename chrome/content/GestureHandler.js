@@ -20,12 +20,12 @@ GestureHandlerModule.prototype = {
   },
 
   handleEvent: function(aEvent) {
-    // exit early for events outside displayed content area
-    if (aEvent.target !== document.getElementById("browser-canvas"))
-      return;
     
     switch (aEvent.type) {
       case "mousedown":
+      // exit early for events outside displayed content area
+      if (aEvent.target !== document.getElementById("browser-canvas"))
+        return;
         this._onMouseDown(aEvent);
         break;
       case "mouseup":
