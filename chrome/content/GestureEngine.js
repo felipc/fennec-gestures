@@ -250,6 +250,17 @@ FennecGestures.prototype = {
     return movements;
 
   },
+  
+  _levCostTable: {
+    q: {q: 0, w: 1, e: 1, d: 2, c: 2, x: 2, z: 1, a: 1},
+    w: {q: 1, w: 0, e: 1, d: 2, c: 2, x: 2, z: 2, a: 2},
+    e: {q: 1, w: 1, e: 0, d: 1, c: 1, x: 2, z: 2, a: 2},
+    d: {q: 2, w: 2, e: 1, d: 0, c: 1, x: 2, z: 2, a: 2},
+    c: {q: 2, w: 2, e: 1, d: 1, c: 0, x: 1, z: 1, a: 2},
+    x: {q: 2, w: 2, e: 2, d: 2, c: 1, x: 0, z: 1, a: 2},
+    z: {q: 1, w: 2, e: 2, d: 2, c: 1, x: 1, z: 0, a: 1},
+    a: {q: 1, w: 2, e: 2, d: 2, c: 2, x: 2, z: 1, a: 0}
+  },
 
   _levenshtein: function (str1, str2, maxThreshold) {
 
@@ -294,7 +305,8 @@ FennecGestures.prototype = {
 
       for (j = 1; j < len; j++) {
 
-        cost = ((str1[j-1] == str2[i-1]) ? 0 : 1);
+        //cost = ((str1[j-1] == str2[i-1]) ? 0 : 1);
+        cost = this._levCostTable[ str1[j-1] ][ str2[i-1] ];
 
         localValue = Math.min( line1[j] + 1, line2[j-1] + 1, line1[j-1] + cost)
         line2[j] = localValue;
